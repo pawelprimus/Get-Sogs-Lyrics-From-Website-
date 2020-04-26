@@ -10,36 +10,36 @@ import java.util.stream.Collectors;
 public class Artist {
 
     private static String name;
-  //  private static Map<String, Integer> wordOccurancy = new HashMap<>();
-    ArrayList<String> wordOccurancy = new ArrayList<String>();
-
+    //  private static Map<String, Integer> wordOccurancy = new HashMap<>();
+    ArrayList<String> allWords = new ArrayList<String>();
 
 
     public Artist(String name) {
         this.name = name.replace(" ", "_");
+        makeWordsList();
     }
 
     public String getName() {
         return name;
     }
 
-    public ArrayList<String> getWordOccurancy() {
-        return wordOccurancy;
+    public ArrayList<String> getAllWords() {
+        return allWords;
     }
 
     public Map<String, Integer> getWordsAscending() {
 
-        Map<String, Integer> words = getWordsOccurances(getWordOccurancy());
+        Map<String, Integer> words = getMapWordsOccurances();
 
-        Map<String, Integer> sortedMap = words.entrySet().stream()
+        Map<String, Integer> sortedWordsMap = words.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-        return sortedMap;
+        return sortedWordsMap;
     }
 
 
-    public ArrayList<String> getSongText() {
+    public void makeWordsList() {
         //List<String> list = Arrays.asList();
         ArrayList<String> list = new ArrayList<String>();
 
@@ -49,34 +49,31 @@ public class Artist {
             try {
                 Document document = Jsoup.connect(url).get();
                 Elements elements = document.getElementsByClass("song-text");
-                //String[] textArray = elements.text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
                 String[] textArray = elements.text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
                 list.addAll(Arrays.asList(textArray));
 
-               //System.out.println(list.toString());
+                //System.out.println(list.toString());
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        wordOccurancy = list;
-
-        //System.out.println(list.toString());
-        return list;
+        allWords = list;
     }
 
     public List<String> getSongLinks() {
+
         String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona,1.html";
 
-        List urlList = new ArrayList();
+        List songsUrlList = new ArrayList();
 
         try {
             Document doc = Jsoup.connect(url).ignoreHttpErrors(true).get();
             Elements links = doc.getElementsByClass("ranking-lista").select("a[href]");
             for (Element link : links) {
                 if (!link.attr("abs:href").isEmpty()) {
-                    urlList.add(link.attr("abs:href"));
+                    songsUrlList.add(link.attr("abs:href"));
                 } else {
 
                 }
@@ -86,24 +83,25 @@ public class Artist {
             e.printStackTrace();
         }
 
-        return urlList;
+        return songsUrlList;
     }
 
-    public Map<String, Integer> getWordsOccurances(ArrayList<String> words) {
-
-        ArrayList<String> list = words;
+    public Map<String, Integer> getMapWordsOccurances() {
 
 
+        ArrayList<String> allWordsList = getAllWords();
 
-        Set<String> uniqueWords = new HashSet<String>(list);
-        Map<String, Integer> frequencyWords = new HashMap<>();
+
+
+        Set<String> uniqueWords = new HashSet<String>(allWordsList);
+        Map<String, Integer> frequencyWordsMap = new HashMap<>();
 
         for (String word : uniqueWords) {
             //System.out.println(word + ": " + Collections.frequency(list, word));
-            frequencyWords.put(word,Collections.frequency(list, word));
+            frequencyWordsMap.put(word, Collections.frequency(allWordsList, word));
         }
-        return frequencyWords;
 
+        return frequencyWordsMap;
     }
 
 }
