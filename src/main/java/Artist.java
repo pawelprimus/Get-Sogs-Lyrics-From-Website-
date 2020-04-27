@@ -1,5 +1,3 @@
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -10,7 +8,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -36,6 +33,9 @@ public class Artist {
         return allWords;
     }
 
+    public int getSumOfAllWords() {
+        return getMapWordsOccurances().values().stream().mapToInt(i -> i).sum();
+    }
 
 
     public Map<String, Integer> getWordsAscending() {
@@ -47,6 +47,21 @@ public class Artist {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
         return sortedWordsMap;
+    }
+
+    public Map<String, Integer> getMapWordsOccurances() {
+
+        ArrayList<String> allWordsList = getAllWords();
+
+        Set<String> uniqueWords = new HashSet<String>(allWordsList);
+        Map<String, Integer> occurancesWordsMap = new HashMap<>();
+
+        for (String word : uniqueWords) {
+            //System.out.println(word + ": " + Collections.frequency(list, word));
+            occurancesWordsMap.put(word, Collections.frequency(allWordsList, word));
+        }
+
+        return occurancesWordsMap;
     }
 
 
@@ -96,25 +111,28 @@ public class Artist {
         return songsUrlList;
     }
 
-    public Map<String, Integer> getMapWordsOccurances() {
 
-        ArrayList<String> allWordsList = getAllWords();
+    public Integer getNumberOfSongs() {
 
-        Set<String> uniqueWords = new HashSet<String>(allWordsList);
-        Map<String, Integer> frequencyWordsMap = new HashMap<>();
 
-        for (String word : uniqueWords) {
-            //System.out.println(word + ": " + Collections.frequency(list, word));
-            frequencyWordsMap.put(word, Collections.frequency(allWordsList, word));
+        //String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona,1.html";
+        String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",alfabetycznie,strona,1.html";
+
+        String allSongs = "";
+
+        try {
+            Document document = Jsoup.connect(url).ignoreHttpErrors(true).get();
+            Elements elements = document.getElementsByClass("belka short");
+
+            allSongs = elements.text().replaceAll("\\D+", "");// delete all non digits
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return frequencyWordsMap;
-    }
+        return Integer.valueOf(allSongs);
 
-    public int getSumOfAllWords(){
-        return  getMapWordsOccurances().values().stream().mapToInt(i->i).sum();
     }
-
 
     public void importToExcel() throws IOException {
         //create blank workbook
@@ -122,7 +140,6 @@ public class Artist {
 
         //Create a blank sheet
         XSSFSheet sheet = workbook.createSheet("AllWords");
-
 
         int rownum = 0;
         int cellnum = 0;
@@ -142,9 +159,9 @@ public class Artist {
 
         Double allWords = Double.valueOf(getSumOfAllWords());
 
-        for(Map.Entry<String, Integer> entry : getWordsAscending().entrySet()){
+        for (Map.Entry<String, Integer> entry : getWordsAscending().entrySet()) {
 
-            cellnum=0;
+            cellnum = 0;
             row = sheet.createRow(rownum++);
             cell = row.createCell(cellnum++);
             cell.setCellValue(entry.getKey());
@@ -154,24 +171,18 @@ public class Artist {
 
             Double thatWord = Double.valueOf(entry.getValue());
 
-            cell.setCellValue(thatWord/allWords);
+            cell.setCellValue(thatWord / allWords);
         }
 
-
-
-        try
-        {
+        try {
             //Write the workbook in file system
-            FileOutputStream out = new FileOutputStream(new File(getName()+"Words.xlsx"));
+            FileOutputStream out = new FileOutputStream(new File(getName() + "Words.xlsx"));
             workbook.write(out);
             out.close();
             System.out.println(getName() + ".xlsx has been created successfully");
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             workbook.close();
         }
     }

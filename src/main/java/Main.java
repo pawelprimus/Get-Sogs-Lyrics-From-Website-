@@ -29,7 +29,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
-        Artist artist = new Artist("Taco Hemingway");
+        Artist artist = new Artist("Lona");
 
 
        /* System.out.println("Before sort" +artist.getAllWords());
@@ -41,6 +41,7 @@ public class Main {
 
         artist.importToExcel();
 
+        System.out.println(artist.getNumberOfSongs());
 
 
 
