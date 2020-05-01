@@ -6,7 +6,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
-        Artist artist = new Artist("Peja");
+        Artist artist = new Artist("Lona");
+
 
 
        /* System.out.println("Before sort" +artist.getAllWords());
@@ -17,6 +18,7 @@ public class Main {
 */
 
         artist.exportToExcel();
+
 
         //System.out.println(artist.getAllSongLinks());
 
