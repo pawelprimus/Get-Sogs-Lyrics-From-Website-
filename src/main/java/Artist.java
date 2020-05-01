@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class Artist {
 
-    private static String name;
+    private  String name;
     //  private static Map<String, Integer> wordOccurancy = new HashMap<>();
     ArrayList<String> allWords = new ArrayList<String>();
 
@@ -68,7 +68,7 @@ public class Artist {
     public void makeWordsList() {
         ArrayList<String> list = new ArrayList<String>();
 
-        List<String> URLlist = getSongLinks();
+        List<String> URLlist = getAllSongLinks();
 
         for (String url : URLlist) {
             try {
@@ -87,7 +87,7 @@ public class Artist {
         allWords = list;
     }
 
-    public List<String> getSongLinks() {
+    public List<String> getSongLinks() { // Only TOP30 SONGS
 
         String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona,1.html";
 
@@ -134,7 +134,7 @@ public class Artist {
 
     }
 
-    public void importToExcel() throws IOException {
+    public void exportToExcel() throws IOException {
         //create blank workbook
         XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -153,9 +153,9 @@ public class Artist {
         cell = row.createCell(cellnum++);
         cell.setCellValue("%");
         cell = row.createCell(cellnum++);
-        cell.setCellValue("All words =");
+        cell.setCellValue("All words =" + getSumOfAllWords());
         cell = row.createCell(cellnum++);
-        cell.setCellValue(getSumOfAllWords());
+        cell.setCellValue("Number of Songs =" + getNumberOfSongs());
 
         Double allWords = Double.valueOf(getSumOfAllWords());
 
@@ -185,6 +185,36 @@ public class Artist {
         } finally {
             workbook.close();
         }
+    }
+
+
+    public List<String> getAllSongLinks() {  //GET ALL OF exists songs
+
+        List songsUrlList = new ArrayList();
+        String url = "";
+
+
+        for (int i = 1; i <= getNumberOfSongs() / 30 + 1; i++) {
+
+            url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona,"+ i +".html";
+            try {
+                Document doc = Jsoup.connect(url).ignoreHttpErrors(true).get();
+                Elements links = doc.getElementsByClass("ranking-lista").select("a[href]");
+                for (Element link : links) {
+                    if (!link.attr("abs:href").isEmpty()) {
+                        songsUrlList.add(link.attr("abs:href"));
+                    } else {
+
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        return songsUrlList;
     }
 
 

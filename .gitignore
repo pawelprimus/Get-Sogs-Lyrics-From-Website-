@@ -1,0 +1,14 @@
+.project
+.classpath
+.settings
+.springBeans
+.pmd
+.ruleset
+atlassian-ide-plugin.xml
+target/
+overlays/
+.idea/
+*.iws
+.iml
+.idea_modules/
+/splitwise-demo.iml
