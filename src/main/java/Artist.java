@@ -1,21 +1,15 @@
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Artist {
 
-    private  String name;
+    private String name;
     ArrayList<String> allWords = new ArrayList<String>();
 
 
@@ -36,7 +30,7 @@ public class Artist {
         return getMapWordsOccurances().values().stream().mapToInt(i -> i).sum();
     }
 
-    private Elements getElementsFromUrlClass(String URL, String className){
+    private Elements getElementsFromUrlClass(String URL, String className) {
         Elements elements = new Elements();
         try {
             Document document = Jsoup.connect(URL).ignoreHttpErrors(true).get();
@@ -46,8 +40,6 @@ public class Artist {
         }
         return elements;
     }
-
-
 
 
     public Map<String, Integer> getWordsAscending() {
@@ -113,11 +105,11 @@ public class Artist {
     }
 
 
-    public List getTextFromUrl(String URL){
+    public List getTextFromUrl(String URL) {
 
         ArrayList<String> textList = new ArrayList<String>();
 
-        String []textArray = getElementsFromUrlClass(URL,"song-text" ).text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
+        String[] textArray = getElementsFromUrlClass(URL, "song-text").text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
         textList.addAll(Arrays.asList(textArray));
 
         return textList;
@@ -126,25 +118,25 @@ public class Artist {
 
     public Integer getNumberOfSongs() {
         String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",alfabetycznie,strona,1.html";
-        String allSongs= getElementsFromUrlClass(url,"belka short").text().replaceAll("\\D+", "");
+        String allSongs = getElementsFromUrlClass(url, "belka short").text().replaceAll("\\D+", "");
         return Integer.valueOf(allSongs);
     }
-    
+
 
     public List<String> getAllSongLinks() {  //GET ALL OF exists songs
 
         List songsUrlList = new ArrayList();
         for (int i = 1; i <= getNumberOfSongs() / 30 + 1; i++) {
-            String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona,"+ i +".html";
+            String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona," + i + ".html";
 
-            for (Element link : getElementsFromUrlClass(url,"ranking-lista").select("a[href]")) {   // + .select("a[href]") to get only URLs from that divclass
+            for (Element link : getElementsFromUrlClass(url, "ranking-lista").select("a[href]")) {   // + .select("a[href]") to get only URLs from that divclass
                 if (!link.attr("abs:href").isEmpty()) {
                     songsUrlList.add(link.attr("abs:href"));
                 } else {
 
                 }
             }
-    }
+        }
 
         return songsUrlList;
     }
