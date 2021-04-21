@@ -143,7 +143,7 @@ public class Artist {
 
     public boolean checkIfArtistExist(){
         String url = "https://www.tekstowo.pl/piosenki_artysty/" + name.replace(" ", "_");
-        String numberOfSongs = getElementsFromUrlClass(url, "belka short").text().replaceAll("\\D+", "");
+        String numberOfSongs = getElementsFromUrlClass(url, "col-md-7 col-lg-8 px-0").text().replaceAll("\\D+", "");
         return Integer.valueOf(numberOfSongs) > 0  ?  true :  false;
     }
 
