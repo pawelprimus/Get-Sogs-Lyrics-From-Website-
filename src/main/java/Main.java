@@ -6,9 +6,9 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 
-        Artist artist = new Artist("Lona");
+        Artist artist = new Artist("lona");
 
-
+        System.out.println(artist.checkIfArtistExist());
 
        /* System.out.println("Before sort" +artist.getAllWords());
         System.out.println("Before sort with occurances" + artist.getMapWordsOccurances());
@@ -17,7 +17,7 @@ public class Main {
         System.out.println("Sum of all words: " + artist.getSumOfAllWords());
 */
 
-        artist.exportToExcel();
+        //artist.exportToExcel();
 
 
         //System.out.println(artist.getAllSongLinks());

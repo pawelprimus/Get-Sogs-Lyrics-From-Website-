@@ -1,27 +1,21 @@
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Artist {
 
-    private  String name;
+    private String name;
     ArrayList<String> allWords = new ArrayList<String>();
 
 
     public Artist(String name) {
         this.name = name.replace(" ", "_");
-        makeWordsList();
+        //makeWordsList();
     }
 
     public String getName() {
@@ -36,7 +30,7 @@ public class Artist {
         return getMapWordsOccurances().values().stream().mapToInt(i -> i).sum();
     }
 
-    private Elements getElementsFromUrlClass(String URL, String className){
+    private Elements getElementsFromUrlClass(String URL, String className) {
         Elements elements = new Elements();
         try {
             Document document = Jsoup.connect(URL).ignoreHttpErrors(true).get();
@@ -46,8 +40,6 @@ public class Artist {
         }
         return elements;
     }
-
-
 
 
     public Map<String, Integer> getWordsAscending() {
@@ -113,11 +105,11 @@ public class Artist {
     }
 
 
-    public List getTextFromUrl(String URL){
+    public List getTextFromUrl(String URL) {
 
         ArrayList<String> textList = new ArrayList<String>();
 
-        String []textArray = getElementsFromUrlClass(URL,"song-text" ).text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
+        String[] textArray = getElementsFromUrlClass(URL, "song-text").text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
         textList.addAll(Arrays.asList(textArray));
 
         return textList;
@@ -126,61 +118,8 @@ public class Artist {
 
     public Integer getNumberOfSongs() {
         String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",alfabetycznie,strona,1.html";
-        String allSongs= getElementsFromUrlClass(url,"belka short").text().replaceAll("\\D+", "");
+        String allSongs = getElementsFromUrlClass(url, "belka short").text().replaceAll("\\D+", "");
         return Integer.valueOf(allSongs);
-    }
-
-    public void exportToExcel() throws IOException {
-        //create blank workbook
-        XSSFWorkbook workbook = new XSSFWorkbook();
-
-        //Create a blank sheet
-        XSSFSheet sheet = workbook.createSheet("AllWords");
-
-        int rownum = 0;
-        int cellnum = 0;
-
-        Row row = sheet.createRow(rownum++);
-
-        Cell cell = row.createCell(cellnum++);
-        cell.setCellValue("Words");
-        cell = row.createCell(cellnum++);
-        cell.setCellValue("Occurances");
-        cell = row.createCell(cellnum++);
-        cell.setCellValue("%");
-        cell = row.createCell(cellnum++);
-        cell.setCellValue("All words =" + getSumOfAllWords());
-        cell = row.createCell(cellnum++);
-        cell.setCellValue("Number of Songs =" + getNumberOfSongs());
-
-        Double allWords = Double.valueOf(getSumOfAllWords());
-
-        for (Map.Entry<String, Integer> entry : getWordsAscending().entrySet()) {
-
-            cellnum = 0;
-            row = sheet.createRow(rownum++);
-            cell = row.createCell(cellnum++);
-            cell.setCellValue(entry.getKey());
-            cell = row.createCell(cellnum++);
-            cell.setCellValue(entry.getValue());
-            cell = row.createCell(cellnum++);
-
-            Double thatWord = Double.valueOf(entry.getValue());
-
-            cell.setCellValue(thatWord / allWords);
-        }
-
-        try {
-            //Write the workbook in file system
-            FileOutputStream out = new FileOutputStream(new File(getName() + "Words.xlsx"));
-            workbook.write(out);
-            out.close();
-            System.out.println(getName() + ".xlsx has been created successfully");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            workbook.close();
-        }
     }
 
 
@@ -188,18 +127,24 @@ public class Artist {
 
         List songsUrlList = new ArrayList();
         for (int i = 1; i <= getNumberOfSongs() / 30 + 1; i++) {
-            String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona,"+ i +".html";
+            String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona," + i + ".html";
 
-            for (Element link : getElementsFromUrlClass(url,"ranking-lista").select("a[href]")) {   // + .select("a[href]") to get only URLs from that divclass
+            for (Element link : getElementsFromUrlClass(url, "ranking-lista").select("a[href]")) {   // + .select("a[href]") to get only URLs from that divclass
                 if (!link.attr("abs:href").isEmpty()) {
                     songsUrlList.add(link.attr("abs:href"));
                 } else {
 
                 }
             }
-    }
+        }
 
         return songsUrlList;
+    }
+
+    public boolean checkIfArtistExist(){
+        String url = "https://www.tekstowo.pl/piosenki_artysty/" + name.replace(" ", "_");
+        String numberOfSongs = getElementsFromUrlClass(url, "col-md-7 col-lg-8 px-0").text().replaceAll("\\D+", "");
+        return Integer.valueOf(numberOfSongs) > 0  ?  true :  false;
     }
 
 
