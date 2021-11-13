@@ -15,7 +15,7 @@ public class Main {
         artist.setArtistStats();
         ExcelService excelService = new ExcelService();
 
-        
+
         excelService.exportToExcel(artist);
 
     }
