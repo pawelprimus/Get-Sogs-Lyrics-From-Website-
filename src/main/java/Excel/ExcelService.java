@@ -1,7 +1,6 @@
 package Excel;
 
 import Model.Artist;
-import Model.ArtistStats;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -10,9 +9,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
+
 public class ExcelService {
+
+    private static final Path WORKING_DIRECTORY = Paths.get(System.getProperty("user.dir"));
+
 
     //Cells name in excel
     private static final String WORDS = "words";
@@ -49,7 +54,7 @@ public class ExcelService {
         cell.setCellValue(NUM_OF_SONGS + artist.getArtistStats().getNumberOfAllSong());
 
 
-        double allWords =  artist.getArtistStats().getSumOfAllWords();
+        double allWords = artist.getArtistStats().getSumOfAllWords();
         Map<String, Integer> allWordsMap = artist.getArtistStats().getWordsOccurences();
 
         for (Map.Entry<String, Integer> entry : allWordsMap.entrySet()) {
@@ -68,12 +73,17 @@ public class ExcelService {
         }
 
         try {
+            File outputDirectory = new File(WORKING_DIRECTORY + "\\" + "output");
+            if (!outputDirectory.exists()) {
+                outputDirectory.mkdir();
+            }
+
             //Write the workbook in file system
             String outputFileName = artist.getName() + OUTPUT_FILE_NAME + XLSX_EXTENSION;
-            FileOutputStream out = new FileOutputStream(new File(outputFileName));
+            FileOutputStream out = new FileOutputStream(new File(outputDirectory + "\\" + outputFileName));
             workbook.write(out);
             out.close();
-            System.out.println(outputFileName + "has been created successfully");
+            System.out.println(outputFileName + " has been created successfully");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
