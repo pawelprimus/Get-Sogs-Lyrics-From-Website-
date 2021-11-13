@@ -1,4 +1,4 @@
-.output
+
 .project
 .classpath
 .settings
@@ -13,3 +13,6 @@ overlays/
 .iml
 .idea_modules/
 /get-songs-lyrics-from-website.iml
+
+#out folder name
+output

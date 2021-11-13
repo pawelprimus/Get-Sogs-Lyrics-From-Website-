@@ -17,7 +17,7 @@ import java.util.Map;
 public class ExcelService {
 
     private static final Path WORKING_DIRECTORY = Paths.get(System.getProperty("user.dir"));
-
+    private static final String OUTPUT_FOLDER_NAME = "output";
 
     //Cells name in excel
     private static final String WORDS = "words";
@@ -73,7 +73,7 @@ public class ExcelService {
         }
 
         try {
-            File outputDirectory = new File(WORKING_DIRECTORY + "\\" + "output");
+            File outputDirectory = new File(WORKING_DIRECTORY + "\\" + OUTPUT_FOLDER_NAME);
             if (!outputDirectory.exists()) {
                 outputDirectory.mkdir();
             }
@@ -83,7 +83,8 @@ public class ExcelService {
             FileOutputStream out = new FileOutputStream(new File(outputDirectory + "\\" + outputFileName));
             workbook.write(out);
             out.close();
-            System.out.println(outputFileName + " has been created successfully");
+            System.out.println(outputFileName + " has been created successfully in " + outputDirectory.toString());
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
