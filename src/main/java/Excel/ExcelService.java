@@ -1,6 +1,7 @@
 package Excel;
 
 import Model.Artist;
+import Model.ArtistStats;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -10,11 +11,19 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 public class ExcelService {
 
 
-    public void exportToExcel(Artist artist) throws IOException {
+    private static final String WORDS = "words";
+    private static final String OCCURANCES = "Occurances";
+    private static final String PERCENT = "%";
+    private static final String ALL_WORDS = "All words :";
+    private static final String NUM_OF_SONGS = "Number of Songs :";
+
+
+    public void exportToExcel(String artistName, ArtistStats artistStats) throws IOException {
         //create blank workbook
         XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -27,19 +36,21 @@ public class ExcelService {
         Row row = sheet.createRow(rownum++);
 
         Cell cell = row.createCell(cellnum++);
-        cell.setCellValue("Words");
+        cell.setCellValue(WORDS);
         cell = row.createCell(cellnum++);
-        cell.setCellValue("Occurances");
+        cell.setCellValue(OCCURANCES);
         cell = row.createCell(cellnum++);
-        cell.setCellValue("%");
+        cell.setCellValue(PERCENT);
         cell = row.createCell(cellnum++);
-        cell.setCellValue("All words =" + artist.getSumOfAllWords());
+        cell.setCellValue(ALL_WORDS + artistStats.getSumOfAllWords());
         cell = row.createCell(cellnum++);
-        cell.setCellValue("Number of Songs =" + artist.getNumberOfSongs());
+        cell.setCellValue(NUM_OF_SONGS + artistStats.getNumberOfAllSong());
 
-        Double allWords = Double.valueOf(artist.getSumOfAllWords());
+        Double allWords = Double.valueOf(artistStats.getSumOfAllWords());
 
-        for (Map.Entry<String, Integer> entry : artist.getAllWords(Artist.OrderType.ASCENDING).entrySet()) {
+        Map<String, Integer> allWordsMap = artistStats.getWordsOccurences();
+
+        for (Map.Entry<String, Integer> entry : allWordsMap.entrySet()) {
 
             cellnum = 0;
             row = sheet.createRow(rownum++);
@@ -49,17 +60,18 @@ public class ExcelService {
             cell.setCellValue(entry.getValue());
             cell = row.createCell(cellnum++);
 
-            Double thatWord = Double.valueOf(entry.getValue());
 
-            cell.setCellValue(thatWord / allWords);
+            double currentLoopWord = Double.valueOf(entry.getValue());
+            double percentageOccurencesValue = currentLoopWord / allWords;
+            cell.setCellValue(percentageOccurencesValue);
         }
 
         try {
             //Write the workbook in file system
-            FileOutputStream out = new FileOutputStream(new File(artist.getName() + "Words.xlsx"));
+            FileOutputStream out = new FileOutputStream(new File(artistName + "_words.xlsx"));
             workbook.write(out);
             out.close();
-            System.out.println(artist.getName() + ".xlsx has been created successfully");
+            System.out.println(artistName + ".xlsx has been created successfully");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

@@ -113,12 +113,12 @@ public class Html_Service {
     }
 
 
-    public Integer getNumberOfSongs(String name) {
+    public int getNumberOfSongs(String name) {
         String url = String.format(ALL_SONGS_URL, name.replace(" ", "_"));
 
         System.out.println(url);
         String allSongs = getElementsFromUrlClass(url, SONGS_AMOUNT_BOX).text().replaceAll("\\D+", "");
-        return Integer.valueOf(allSongs);
+        return Integer.parseInt(allSongs);
     }
 
 
