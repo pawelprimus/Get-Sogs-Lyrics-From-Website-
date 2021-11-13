@@ -15,7 +15,7 @@ public class Artist {
 
     public Artist(String name) {
         this.name = name.replace(" ", "_");
-        //makeWordsList();
+        makeWordsList();
     }
 
     public String getName() {
@@ -30,7 +30,7 @@ public class Artist {
         return getMapWordsOccurances().values().stream().mapToInt(i -> i).sum();
     }
 
-    private Elements getElementsFromUrlClass(String URL, String className) {
+    public Elements getElementsFromUrlClass(String URL, String className) {
         Elements elements = new Elements();
         try {
             Document document = Jsoup.connect(URL).ignoreHttpErrors(true).get();
@@ -118,7 +118,8 @@ public class Artist {
 
     public Integer getNumberOfSongs() {
         String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",alfabetycznie,strona,1.html";
-        String allSongs = getElementsFromUrlClass(url, "belka short").text().replaceAll("\\D+", "");
+        System.out.println(url);
+        String allSongs = getElementsFromUrlClass(url, "col-md-7 col-lg-8 px-0").text().replaceAll("\\D+", "");
         return Integer.valueOf(allSongs);
     }
 
