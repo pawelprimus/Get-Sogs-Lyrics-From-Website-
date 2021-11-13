@@ -11,6 +11,17 @@ import java.util.stream.Collectors;
 
 public class Html_Service {
 
+    //Links
+    private  static final String ALL_SONGS_URL = "https://www.tekstowo.pl/piosenki_artysty,%s,popularne,malejaco,strona,1.html";
+    private  static final String ALL_SONGS_URL_PAGE = "https://www.tekstowo.pl/piosenki_artysty,%s,popularne,malejaco,strona,%d.html";
+    //HTML Class names
+    private  static final String RANKING_LIST = "ranking-lista";
+    private  static final String SONG_TEXT = "song-text";
+    private  static final String SONGS_AMOUNT_BOX = "col-md-7 col-lg-8 px-0";
+    //HTML Headers
+    private  static final String A_HREF = "a[href]";
+    private  static final String ABS_HREF = "abs:href";
+
 
     public int getSumOfAllWords(String name) {
         return getMapWordsOccurances(name).values().stream().mapToInt(i -> i).sum();
@@ -68,16 +79,16 @@ public class Html_Service {
     // Only TOP30 SONGS
     public List<String> getSongLinks(String name) {
 
-        String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona,1.html";
+        String url = String.format(ALL_SONGS_URL, name.replace(" ", "_"));
 
         List songsUrlList = new ArrayList();
 
         try {
             Document doc = Jsoup.connect(url).ignoreHttpErrors(true).get();
-            Elements links = doc.getElementsByClass("ranking-lista").select("a[href]");
+            Elements links = doc.getElementsByClass(RANKING_LIST).select(A_HREF);
             for (Element link : links) {
-                if (!link.attr("abs:href").isEmpty()) {
-                    songsUrlList.add(link.attr("abs:href"));
+                if (!link.attr(ABS_HREF).isEmpty()) {
+                    songsUrlList.add(link.attr(ABS_HREF));
                 } else {
 
                 }
@@ -95,7 +106,7 @@ public class Html_Service {
 
         ArrayList<String> textList = new ArrayList<String>();
 
-        String[] textArray = getElementsFromUrlClass(URL, "song-text").text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
+        String[] textArray = getElementsFromUrlClass(URL, SONG_TEXT).text().toLowerCase().replaceAll("\\p{Punct}", "").split(" ");
         textList.addAll(Arrays.asList(textArray));
 
         return textList;
@@ -103,9 +114,10 @@ public class Html_Service {
 
 
     public Integer getNumberOfSongs(String name) {
-        String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",alfabetycznie,strona,1.html";
+        String url = String.format(ALL_SONGS_URL, name.replace(" ", "_"));
+
         System.out.println(url);
-        String allSongs = getElementsFromUrlClass(url, "col-md-7 col-lg-8 px-0").text().replaceAll("\\D+", "");
+        String allSongs = getElementsFromUrlClass(url, SONGS_AMOUNT_BOX).text().replaceAll("\\D+", "");
         return Integer.valueOf(allSongs);
     }
 
@@ -114,11 +126,11 @@ public class Html_Service {
 
         List songsUrlList = new ArrayList();
         for (int i = 1; i <= getNumberOfSongs(name) / 30 + 1; i++) {
-            String url = "https://www.tekstowo.pl/piosenki_artysty," + name.replace(" ", "_") + ",popularne,malejaco,strona," + i + ".html";
+            String url = String.format(ALL_SONGS_URL_PAGE, name.replace(" ", "_"),i);
 
-            for (Element link : getElementsFromUrlClass(url, "ranking-lista").select("a[href]")) {   // + .select("a[href]") to get only URLs from that divclass
-                if (!link.attr("abs:href").isEmpty()) {
-                    songsUrlList.add(link.attr("abs:href"));
+            for (Element link : getElementsFromUrlClass(url, RANKING_LIST).select(A_HREF)) {   // + .select("a[href]") to get only URLs from that divclass
+                if (!link.attr(ABS_HREF).isEmpty()) {
+                    songsUrlList.add(link.attr(ABS_HREF));
                 } else {
 
                 }
@@ -130,7 +142,7 @@ public class Html_Service {
 
     public boolean checkIfArtistExist(String name) {
         String url = "https://www.tekstowo.pl/piosenki_artysty/" + name.replace(" ", "_");
-        String numberOfSongs = getElementsFromUrlClass(url, "col-md-7 col-lg-8 px-0").text().replaceAll("\\D+", "");
+        String numberOfSongs = getElementsFromUrlClass(url, SONGS_AMOUNT_BOX).text().replaceAll("\\D+", "");
         return Integer.valueOf(numberOfSongs) > 0 ? true : false;
     }
 }

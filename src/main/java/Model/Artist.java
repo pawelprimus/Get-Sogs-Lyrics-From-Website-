@@ -2,7 +2,9 @@ package Model;
 
 import Service.Html_Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Artist {
 
@@ -24,18 +26,18 @@ public class Artist {
         return numberOfAllSongs;
     }
 
-    public List<String> getAllSongLinks() {  //GET ALL OF exists songs
-
+    //GET ALL OF exists songs
+    public List<String> getAllSongLinks() {
         List<String> links = html_service.getSongLinks(name);
         return links;
     }
 
-    public  Map<String, Integer> getAllWords(OrderType orderType) {
+    public Map<String, Integer> getAllWords(OrderType orderType) {
         Map<String, Integer> words = null;
 
-        if(orderType.equals(OrderType.DEFAULT)){
+        if (orderType.equals(OrderType.DEFAULT)) {
             words = html_service.getMapWordsOccurances(name);
-        } else if(orderType.equals(OrderType.ASCENDING)) {
+        } else if (orderType.equals(OrderType.ASCENDING)) {
             words = html_service.getMapWordsAscending(name);
         }
 
