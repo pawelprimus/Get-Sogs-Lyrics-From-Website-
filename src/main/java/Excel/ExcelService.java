@@ -1,4 +1,3 @@
-/*
 package Excel;
 
 import Model.Artist;
@@ -12,12 +11,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-class ExcelService {
+public class ExcelService {
 
 
-    Artist artist;
-
-    public void exportToExcel() throws IOException {
+    public void exportToExcel(Artist artist) throws IOException {
         //create blank workbook
         XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -42,7 +39,7 @@ class ExcelService {
 
         Double allWords = Double.valueOf(artist.getSumOfAllWords());
 
-        for (Map.Entry<String, Integer> entry : artist.getWordsAscending().entrySet()) {
+        for (Map.Entry<String, Integer> entry : artist.getAllWords(Artist.OrderType.ASCENDING).entrySet()) {
 
             cellnum = 0;
             row = sheet.createRow(rownum++);
@@ -71,4 +68,3 @@ class ExcelService {
 
     }
 }
-*/

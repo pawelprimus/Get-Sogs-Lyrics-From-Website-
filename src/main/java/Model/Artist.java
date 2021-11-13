@@ -21,6 +21,11 @@ public class Artist {
         return name;
     }
 
+    public int getSumOfAllWords() {
+        int sumOfAllWords = html_service.getSumOfAllWords(name);
+        return sumOfAllWords;
+    }
+
     public Integer getNumberOfSongs() {
         Integer numberOfAllSongs = html_service.getNumberOfSongs(name);
         return numberOfAllSongs;
