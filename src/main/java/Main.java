@@ -1,4 +1,8 @@
+import Model.Artist;
+
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 
 public class Main {
@@ -8,17 +12,20 @@ public class Main {
 
         Artist artist = new Artist("mata");
 
-        System.out.println(artist.checkIfArtistExist());
-
         System.out.println(artist.getNumberOfSongs());
-        System.out.println(artist.getSongLinks());
+        List<String> songsLinks = artist.getAllSongLinks();
 
+        for (String link : songsLinks){
+            System.out.println(link);
+        }
+
+        Map<String, Integer> map = artist.getAllWords(Artist.OrderType.ASCENDING);
+
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + ":" + entry.getValue());
+        }
         //System.out.println(artist.getElementsFromUrlClass("https://www.tekstowo.pl/piosenki_artysty,mata,alfabetycznie,strona,1.html", "col-md-7 col-lg-8 px-0"));
 
-        System.out.println("Before sort" + artist.getAllWords());
-        System.out.println("Before sort with occurances" + artist.getMapWordsOccurances());
-        System.out.println("After sort" + artist.getWordsAscending());
-        System.out.println("Sum of all words: " + artist.getSumOfAllWords());
 
         //artist.exportToExcel();
 
