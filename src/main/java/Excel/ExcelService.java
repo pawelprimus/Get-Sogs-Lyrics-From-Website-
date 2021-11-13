@@ -22,6 +22,9 @@ public class ExcelService {
     private static final String NUM_OF_SONGS = "Number of Songs :";
     private static final String SHEET_NAME = "Words occurences";
 
+    private static final String OUTPUT_FILE_NAME = "Words";
+    private static final String XLSX_EXTENSION = ".xlsx";
+
 
     public void exportToExcel(Artist artist) throws IOException {
         //create blank workbook
@@ -66,10 +69,11 @@ public class ExcelService {
 
         try {
             //Write the workbook in file system
-            FileOutputStream out = new FileOutputStream(new File(artist.getName() + "_words.xlsx"));
+            String outputFileName = artist.getName() + OUTPUT_FILE_NAME + XLSX_EXTENSION;
+            FileOutputStream out = new FileOutputStream(new File(outputFileName));
             workbook.write(out);
             out.close();
-            System.out.println(artist.getName() + ".xlsx has been created successfully");
+            System.out.println(outputFileName + "has been created successfully");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

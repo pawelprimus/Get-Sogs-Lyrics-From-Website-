@@ -116,7 +116,6 @@ public class Html_Service {
     public int getNumberOfSongs(String name) {
         String url = String.format(ALL_SONGS_URL, name.replace(" ", "_"));
 
-        System.out.println(url);
         String allSongs = getElementsFromUrlClass(url, SONGS_AMOUNT_BOX).text().replaceAll("\\D+", "");
         return Integer.parseInt(allSongs);
     }
